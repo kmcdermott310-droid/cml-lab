@@ -2,9 +2,10 @@ from ncclient import manager
 
 router = [{"host": "192.168.255.20", "user": "cisco", "password": "cisco"}]
 
-# This structure uses the 'native' root but ensures the namespaces are exactly where Cisco expects them
+#This structure uses the 'native' root but ensures the namespaces are exactly where Cisco expects them
+#The first <config> line needed (xmlns="urn:ietf:params:xml:ns:netconf:base:1.0") from the top output of the netconf_get_config.py script
 ospf_config = """
-<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">  #this was taken from the first line of the netconf get config script, its needed for this to work
+<config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
 <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
   <router>
     <ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
@@ -36,3 +37,5 @@ for device in router:
             
     except Exception as e:
         print(f"Failed on {device['host']}: {e}")
+
+
