@@ -1,24 +1,22 @@
 import requests
-import json
+import urllib3
 
-url = "https://192.168.255.20/restconf/data/Cisco-IOS-XE-native:native"
+# Suppress the InsecureRequestWarning
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Try the simplified top-level data path
+url = "https://192.168.255.20/restconf/data"
 
 headers = {
-    "Accept": "application/yang-data+json",
-    "Content-Type": "application/yang-data+json"
+    "Accept": "application/yang-data+json"
 }
 
-# Standard CML credentials
 auth = ("cisco", "cisco")
 
-try:
-    response = requests.get(url, headers=headers, auth=auth, verify=False)
-    
-    if response.status_code == 200:
-        print(json.dumps(response.json(), indent=4))
-    else:
-        print(f"Failed! Status Code: {response.status_code}")
-        print(response.text)
+response = requests.get(url, headers=headers, auth=auth, verify=False)
 
-except Exception as e:
-    print(f"Error: {e}")
+if response.status_code == 200:
+    print("Success! Root data found.")
+    print(response.json())
+else:
+    print(f"Failed with Status: {response.status_code}")
