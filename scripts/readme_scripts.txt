@@ -48,10 +48,11 @@ python3 scripts/restconf_get_ospf_nei.py
 -this will show neighbors
 
 
-
-
 Netmiko
 
 1.
 python3 scripts/netmiko_wr_mem.py
 saves lab devices
+2.
+python3 scripts/netmiko_showospfnei.py
+show ospf nei
