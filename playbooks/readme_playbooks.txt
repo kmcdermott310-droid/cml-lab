@@ -10,3 +10,8 @@ ansible-playbook -i inventory/lab_devices.ini playbooks/show_interfaces.yml
 2. This one is not a playbook but its an ansible function that will test connectiviy to all nodes. In this case just "routers" which is denoted in the ini file.
 
 ansible routers -i inventory/lab_devices.ini -m ping
+
+
+3. Config Interfaces for OSPF
+
+ansible-playbook -i inventory/lab_devices.ini playbooks/ospf_interface_create.yml
