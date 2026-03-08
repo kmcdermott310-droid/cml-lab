@@ -34,9 +34,9 @@ python3 scripts/netconf_ospf_r1.py
 -supposed to make ospf on router1
 2. 
 netconf_ospf_r2.py
-python3 scripts/netconf_ospf_r1.py
+python3 scripts/netconf_ospf_r2.py
 -supposed to make ospf on router2
-
+4. go run the playbook for ospf interfaces now, using ansible playbooks.
 
 
 
