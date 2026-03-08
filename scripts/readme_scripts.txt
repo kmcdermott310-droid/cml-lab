@@ -46,5 +46,6 @@ python3 scripts/netconf_ospf_r2.py
 
 Netmiko
 
-netmiko_wr_mem.py
+1.
+python3 scripts/netmiko_wr_mem.py
 saves lab devices
