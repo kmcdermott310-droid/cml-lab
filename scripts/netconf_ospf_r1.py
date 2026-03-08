@@ -4,6 +4,7 @@ router = [{"host": "192.168.255.20", "user": "cisco", "password": "cisco"}]
 
 # This structure uses the 'native' root but ensures the namespaces are exactly where Cisco expects them
 ospf_config = """
+<config>
 <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
   <router>
     <ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
@@ -18,6 +19,7 @@ ospf_config = """
     </ospf>
   </router>
 </native>
+</config>
 """
 
 for device in router:
