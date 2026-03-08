@@ -13,7 +13,7 @@ ospf_config = """
         <id>1</id>
         <network>
           <number>10.10.10.0</number>
-          <mask>255.255.255.0</mask>
+          <mask>0.0.0.255</mask>
           <area>0</area>
         </network>
       </process-id>
