@@ -13,6 +13,7 @@ url = "https://sandboxdnac2.cisco.com/dna/intent/api/v1/site/count"
 headers = {'X-Auth-Token': token, 'Content-Type': 'application/json'}
 
 #5 Send the GET request
+payload = none
 response = requests.request('GET', url, headers=headers, data = payload)
 
 #6 Print the results
