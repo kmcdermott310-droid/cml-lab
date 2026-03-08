@@ -17,4 +17,6 @@ if __name__ == "__main__":
     print(get_auth_token())
 
 
-#Note: This script pulls the JWT from Catalyst Center/DNAC. When I made this, only dnac2 was working I guess I dont know. This script also acts as a function and can be called from other scripts to auto pull a token.
+#Note: This script pulls the JWT from Catalyst Center/DNAC.
+#When I made this, only dnac2 was working I guess I dont know.
+#This script also acts as a function and can be called from other scripts to auto pull a token.
