@@ -1,21 +1,20 @@
 import requests
 from requests.auth import HTTPBasicAuth
 
-#1 Hide the SSL certificate warning messages from the terminal output
+#1 Hide the SSL certificate warning messages
 requests.packages.urllib3.disable_warnings()
 
-#2 Set the address for the Catalyst Center authentication service
-url = "https://sandboxdnac2.cisco.com/dna/system/api/v1/auth/token"
+#2 Create a function that other scripts can run
+def get_auth_token():
+    url = "https://sandboxdnac2.cisco.com/dna/system/api/v1/auth/token"
+    #3 Send the POST request
+    response = requests.post(url, auth=HTTPBasicAuth('devnetuser', 'Cisco123!'), verify=False)
+    #4 Return only the token string to the caller
+    return response.json()['Token']
 
-#3 Send a POST request with the username and password to get access
-response = requests.post(url, auth=HTTPBasicAuth('devnetuser', 'Cisco123!'), verify=False)
-
-#4 Extract the specific 'Token' string from the JSON data sent back by the server
-token = response.json()['Token']
-
-#5 Display a header and the long character string used for future requests
-print("JSON Web Token")
-print(token)
+#5 This part only runs if you execute THIS file directly
+if __name__ == "__main__":
+    print(get_auth_token())
 
 
-#Note: This script pulls the JWT from Catalyst Center/DNAC. When I made this, only dnac2 was working I guess I dont know. 
+#Note: This script pulls the JWT from Catalyst Center/DNAC. When I made this, only dnac2 was working I guess I dont know. This script also acts as a function and can be called from other scripts to auto pull a token.
