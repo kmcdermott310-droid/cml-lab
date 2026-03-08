@@ -1,8 +1,5 @@
 To run from cml-lab directory....
 
-
-
-
 Catalyst/DNAC: From https://developer.cisco.com/docs/dna-center/2-3-7-9/overview/
 Note: These might have no output but still work
 
@@ -18,7 +15,6 @@ python3 scripts/catc_jwt_pull.py
 4.
 catc_pull_inventory.py
 python3 scripts/catc_pull_inventory.py
-
 
 
 
@@ -39,7 +35,16 @@ python3 scripts/netconf_ospf_r2.py
 4. go run the playbook for ospf interfaces now, using ansible playbooks.
 
 
+RESTCONF
 
+1. 
+restconf_get_config_r1.py
+python3 scripts/restconf_get_config_r1.py
+-this will use restconf to get the full config
+2.
+restconf_get_ospf_nei.py
+python3 scripts/restconf_get_ospf_nei.py
+-this will show neighbors
 
 
 
