@@ -14,7 +14,7 @@ headers = {'X-Auth-Token': token, 'Content-Type': 'application/json'}
 
 #5 Send the GET request
 payload = None
-response = requests.request('GET', url, headers=headers, data = payload)
+response = requests.request('GET', url, headers=headers, data=payload, verify=False)
 
 #6 Print the results
 print(response.text.encode('utf8'))
