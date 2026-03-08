@@ -42,6 +42,7 @@ restconf_get_config_r1.py
 python3 scripts/restconf_get_config_r1.py
 -this will use restconf to get the full config
 2.
+this doesnt work lol
 restconf_get_ospf_nei.py
 python3 scripts/restconf_get_ospf_nei.py
 -this will show neighbors
