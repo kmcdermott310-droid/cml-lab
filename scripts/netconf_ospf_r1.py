@@ -7,18 +7,38 @@ router = [{"host": "192.168.255.20", "user": "cisco", "password": "cisco"}]
 ospf_config = """
 <config xmlns="urn:ietf:params:xml:ns:netconf:base:1.0">
 <native xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-native">
-  <router>
-    <ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
-      <process-id>
-        <id>1</id>
-        <network>
-          <number>10.10.10.0</number>
-          <mask>0.0.0.255</mask>
-          <area>0</area>
-        </network>
-      </process-id>
-    </ospf>
-  </router>
+<router>
+        <router-ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
+          <ospf>
+            <process-id>
+              <id>1</id>
+              <network>
+                <ip>10.10.10.0</ip>
+                <wildcard>0.0.0.255</wildcard>
+                <area>0</area>
+              </network>
+            </process-id>
+          </ospf>
+        </router-ospf>
+        <ospf xmlns="http://cisco.com/ns/yang/Cisco-IOS-XE-ospf">
+          <id>1</id>
+          <auto-cost>
+            <reference-bandwidth>100</reference-bandwidth>
+          </auto-cost>
+          <timers>
+            <throttle>
+              <spf>
+                <delay>50</delay>
+                <min-delay>200</min-delay>
+                <max-delay>5000</max-delay>
+              </spf>
+            </throttle>
+          </timers>
+          <compatible>
+            <rfc1583/>
+          </compatible>
+        </ospf>
+</router>
 </native>
 </config>
 """
