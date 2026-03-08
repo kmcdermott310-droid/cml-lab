@@ -10,6 +10,7 @@
           - ip address 10.10.10.1 255.255.255.0
           - no shutdown
         parents: interface GigabitEthernet0/1
+        match: none  # Forces Ansible to re-enter the interface context
       when: inventory_hostname == "R1"
 
     - name: Configure R2 Interface
@@ -18,4 +19,5 @@
           - ip address 10.10.10.2 255.255.255.0
           - no shutdown
         parents: interface GigabitEthernet0/1
+        match: none  # Forces Ansible to re-enter the interface context
       when: inventory_hostname == "R2"
