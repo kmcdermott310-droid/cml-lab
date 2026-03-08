@@ -15,3 +15,6 @@ ansible routers -i inventory/lab_devices.ini -m ping
 3. Config Interfaces for OSPF
 
 ansible-playbook -i inventory/lab_devices.ini playbooks/ospf_interface_create.yml
+save after
+with
+python3 scripts/netmiko_wr_mem.py
