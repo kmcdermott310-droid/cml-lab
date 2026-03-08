@@ -26,12 +26,16 @@ NETCONF for lab devices
 
 1.
 netconf_get_config.py
-
-use to see xml and make other scripts
+python3 scripts/netconf_get_config.py
+-use to see xml and make other scripts
 2. 
 netconf_ospf_r1.py
-
-supposed to make ospf on routers
+python3 scripts/netconf_ospf_r1.py
+-supposed to make ospf on router1
+2. 
+netconf_ospf_r2.py
+python3 scripts/netconf_ospf_r1.py
+-supposed to make ospf on router2
 
 
 
