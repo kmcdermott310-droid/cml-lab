@@ -41,3 +41,7 @@ Click Add SSH key.
 cisco@cisco:~$ git clone git@github.com:kmcdermott310-droid/cml-lab.git
 
 Then do "git pull" to keep pulling 
+
+
+
+python3 -m pip install ncclient requests netmiko urllib3 --break-system-packages
