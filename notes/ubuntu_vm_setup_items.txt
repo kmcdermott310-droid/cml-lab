@@ -32,10 +32,13 @@ Next connect to github, use the key shown above:
 ssh-keygen -t ed25519 -C "kmcdermott310@gmail.com"
 cat ~/.ssh/id_ed25519.pub
 
-
 Log into GitHub.
 Go to Settings (click your profile icon in the top right).
 Click SSH and GPG keys in the left sidebar.
 Click New SSH key.
 Give it a Title (e.g., "CML Ubuntu Node") and paste your key into the Key box.
 Click Add SSH key.
+
+cisco@cisco:~$ git clone git@github.com:kmcdermott310-droid/cml-lab.git
+
+Then do "git pull" to keep pulling 
