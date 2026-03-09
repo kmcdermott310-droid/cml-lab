@@ -1,4 +1,4 @@
-For CML thing:
+For CML bootstrap:
 
 #cloud-config
 hostname: cisco
@@ -16,7 +16,6 @@ runcmd:
   - [ ip, addr, add, 192.168.255.10/24, dev, ens2 ]
   - [ ip, link, set, dev, ens2, up ]
   - [ ip, route, add, default, via, 192.168.255.1 ]
-
 
 
 
