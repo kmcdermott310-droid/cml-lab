@@ -33,6 +33,8 @@ netconf_ospf_r2.py
 python3 scripts/netconf_ospf_r2.py
 -supposed to make ospf on router2
 4. go run the playbook for ospf interfaces now, using ansible playbooks.
+ansible-playbook -i inventory/lab_devices.ini playbooks/ospf_interface_create.yml
+
 
 
 RESTCONF
