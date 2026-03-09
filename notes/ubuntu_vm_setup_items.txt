@@ -45,3 +45,4 @@ Then do "git pull" to keep pulling
 
 
 python3 -m pip install ncclient requests netmiko urllib3 --break-system-packages
+python3 -m pip install ansible-pylibssh --break-system-packages
