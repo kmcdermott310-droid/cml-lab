@@ -5,6 +5,37 @@ no ip domain lookup
 vrf def mgmt
 address-fam ipv4
 !
+hostname R1
+username cisco priv 15 secret cisco
+ip domain name lab.com
+crypto key generate rsa mod 2048
+!
+int g0/0
+no shu
+vrf for mgmt
+ip add 192.168.255.20 255.255.255.0
+desc MGMT
+!
+!
+netconf-yang
+ip route vrf mgmt 0.0.0.0 0.0.0.0 192.168.255.10
+!
+ip ssh v 2
+line vty 0 15
+login local
+trans in all
+trans out all
+end
+wr
+
+
+----------------------------------
+
+
+no ip domain lookup
+vrf def mgmt
+address-fam ipv4
+!
 hostname R2
 username cisco priv 15 secret cisco
 ip domain name lab.com
