@@ -33,7 +33,10 @@ end
 
 
 
-
+no ip domain lookup
+vrf def mgmt
+address-fam ipv4
+!
 hostname WAN-SPOKE
 username cisco priv 15 secret cisco
 ip domain name lab.com
