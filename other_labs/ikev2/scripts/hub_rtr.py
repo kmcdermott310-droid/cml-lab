@@ -70,9 +70,11 @@ for device in node:
                 f"peer {PEER_NAME}",
                 f"address {PEER_IP}",
                 f"pre-shared-key local {PSK}",
+                f"pre-shared-key remote {PSK}",
 
                 f"crypto ikev2 profile {IKEV2_PROFILE}",
                 f"match identity remote address {PEER_IP} 0.0.0.0",
+                "identity local address IP_ADDR",
                 "authentication remote pre-share",
                 "authentication local pre-share",
                 f"keyring local {IKEV2_KEYRING}",
