@@ -74,7 +74,7 @@ for device in node:
 
                 f"crypto ikev2 profile {IKEV2_PROFILE}",
                 f"match identity remote address {PEER_IP} 0.0.0.0",
-                "identity local address {IP_ADDR}",
+                f"identity local address {IP_ADDR}",
                 "authentication remote pre-share",
                 "authentication local pre-share",
                 f"keyring local {IKEV2_KEYRING}",
