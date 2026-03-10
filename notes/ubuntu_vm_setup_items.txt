@@ -24,9 +24,11 @@ Once online, ping google first then:
 sudo apt update && \
 sudo apt install -y python3 python3-pip ansible openssh-client && \
 pip3 install ncclient requests netmiko urllib3
+
 python3 -m pip install ncclient requests netmiko urllib3 --break-system-packages
 python3 -m pip install ansible-pylibssh --break-system-packages
 
+sudo apt update && sudo apt install -y git
 
 Next connect to github, use the key shown above:
 ssh-keygen -t ed25519 -C "kmcdermott310@gmail.com"
