@@ -74,6 +74,7 @@ for device in node:
                 f"pre-shared-key remote {PSK}",
 
                 f"crypto ikev2 profile {IKEV2_PROFILE}",
+                f"fvrf {VRF}",
                 f"match identity remote address {PEER_IP} 0.0.0.0",
                 f"identity local address {IP_ADDR}",
                 "authentication remote pre-share",
