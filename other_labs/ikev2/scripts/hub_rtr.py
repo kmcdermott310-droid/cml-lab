@@ -63,6 +63,7 @@ for device in node:
                 "integrity sha256",
                 "group 14",
                 f"crypto ikev2 policy {IKEV2_POLICY}",
+                f"match fvrf {VRF}",
                 f"proposal {IKEV2_PROPOSAL}",
 
                 # IKEv2 keyring and profile (PSK)
