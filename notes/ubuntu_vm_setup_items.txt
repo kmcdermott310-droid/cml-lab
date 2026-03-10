@@ -24,7 +24,8 @@ Once online, ping google first then:
 sudo apt update && \
 sudo apt install -y python3 python3-pip ansible openssh-client && \
 pip3 install ncclient requests netmiko urllib3
-
+python3 -m pip install ncclient requests netmiko urllib3 --break-system-packages
+python3 -m pip install ansible-pylibssh --break-system-packages
 
 
 Next connect to github, use the key shown above:
@@ -44,5 +45,3 @@ Then do "git pull" to keep pulling
 
 
 
-python3 -m pip install ncclient requests netmiko urllib3 --break-system-packages
-python3 -m pip install ansible-pylibssh --break-system-packages
