@@ -54,7 +54,6 @@ for device in node:
                 f"vrf forwarding {VRF}",
                 f"description {DESCRIPTION}",
                 f"ip address {IP_ADDR} {NETMASK}",
-                f"ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
                 "no shutdown",
 
                 # IKEv2 proposal and policy
