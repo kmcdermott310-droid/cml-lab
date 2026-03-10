@@ -26,7 +26,7 @@ TUNNEL_IP = "172.16.0.2"
 TUNNEL_MASK = "255.255.255.0"
 TUNNEL_SRC = INTERFACE
 
-PEER_IP = "0.0.0.0"
+PEER_IP = "10.0.0.1"
 PEER_NAME = "peer1"
 PSK = "Cisco123!"
 
@@ -74,7 +74,7 @@ for device in node:
 
                 f"crypto ikev2 profile {IKEV2_PROFILE}",
                 f"match identity remote address {PEER_IP} 0.0.0.0",
-                "identity local address IP_ADDR",
+                "identity local address {IP_ADDR}",
                 "authentication remote pre-share",
                 "authentication local pre-share",
                 f"keyring local {IKEV2_KEYRING}",
