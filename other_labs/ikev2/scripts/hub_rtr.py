@@ -12,7 +12,7 @@ node = [
 
 # --- Configuration Parameters (customize these) ---
 VRF = "front-door"
-INTERFACE = "GigabitEthernet0/2"
+INTERFACE = "Gi2"
 DESCRIPTION = "Configured by Netmiko"
 IP_ADDR = "10.0.0.1"
 NETMASK = "255.255.255.0"
