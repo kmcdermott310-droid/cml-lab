@@ -19,6 +19,7 @@ NETMASK = "255.255.255.0"
 
 OSPF_PROCESS = "1"
 OSPF_AREA = "20"
+OSPF_AREA_MODE = "STUB"
 
 TUNNEL_INTERFACE = "Tunnel0"
 TUNNEL_DESCRIPTION = "GRE over IPsec to peer"
@@ -102,6 +103,7 @@ for device in node:
 
                 # Ensure global OSPF process exists (not VRF-scoped)
                 f"router ospf {OSPF_PROCESS}",
+                "area {OSPF_AREA} {OSPF_AREA_MODE}
 
                 # Persist configuration
                 "end",
