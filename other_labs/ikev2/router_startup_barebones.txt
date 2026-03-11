@@ -1,6 +1,7 @@
 Barebones connect to ubuntu vm over mgmt vrf
 
-
+en
+conf t
 no ip domain lookup
 vrf def mgmt
 address-fam ipv4
@@ -32,6 +33,8 @@ wr
 ----------------------------------
 
 
+en
+conf t
 no ip domain lookup
 vrf def mgmt
 address-fam ipv4
@@ -61,6 +64,8 @@ wr
 
 ----------------------------------
 
+en
+conf t
 no ip domain lookup
 vrf def mgmt
 address-fam ipv4
@@ -90,6 +95,8 @@ wr
 
 ----------------------------------
 
+en
+conf t
 no ip domain lookup
 vrf def mgmt
 address-fam ipv4
