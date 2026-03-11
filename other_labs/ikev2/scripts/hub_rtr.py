@@ -20,6 +20,19 @@ NETMASK = "255.255.255.0"
 OSPF_PROCESS = "1"
 OSPF_AREA = "0"
 
+# Downlink interfaces to core routers (non-VRF)
+DOWNLINK_CORE1_IF = "G0/2"
+DOWNLINK_CORE1_DESC = "Downlink-Core-1"
+DOWNLINK_CORE1_IP = "100.100.100.6"
+
+DOWNLINK_CORE2_IF = "G0/3"
+DOWNLINK_CORE2_DESC = "Downlink-Core-2"
+DOWNLINK_CORE2_IP = "100.100.100.10"
+DOWNLINK_MASK = "255.255.255.252"
+
+# Tunnel-specific OSPF area
+TUNNEL_OSPF_AREA = "10"
+
 TUNNEL_INTERFACE = "Tunnel0"
 TUNNEL_DESCRIPTION = "GRE over IPsec to peer"
 TUNNEL_IP = "172.16.0.1"
@@ -44,6 +57,19 @@ for device in node:
         with ConnectHandler(**device) as net_connect:
             # Build a full configuration set: VRF, interface, IKEv2, IPsec, tunnel, OSPF
             config_commands = [
+                # First, add non-VRF physical links to cores
+                f"interface {DOWNLINK_CORE1_IF}",
+                f"description {DOWNLINK_CORE1_DESC}",
+                f"ip address {DOWNLINK_CORE1_IP} {DOWNLINK_MASK}",
+                f"ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
+                "no shutdown",
+
+                f"interface {DOWNLINK_CORE2_IF}",
+                f"description {DOWNLINK_CORE2_DESC}",
+                f"ip address {DOWNLINK_CORE2_IP} {DOWNLINK_MASK}",
+                f"ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
+                "no shutdown",
+
                 # Create VRF using modern syntax and enable IPv4 address family
                 f"vrf definition {VRF}",
                 " address-family ipv4",
@@ -96,8 +122,8 @@ for device in node:
                 f"tunnel destination {PEER_IP}",
                 "tunnel mode gre ip",
                 f"tunnel protection ipsec profile {IPSEC_PROFILE}",
-                # OSPF on tunnel will use the global OSPF process (configured below)
-                f"ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
+                # OSPF on tunnel will use the global OSPF process; tunnel area changed
+                f"ip ospf {OSPF_PROCESS} area {TUNNEL_OSPF_AREA}",
                 "no shutdown",
 
                 # Ensure global OSPF process exists (not VRF-scoped)
