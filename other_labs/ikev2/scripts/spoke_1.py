@@ -7,113 +7,93 @@ node = [
         "username": "cisco",
         "password": "cisco",
     },
-
 ]
 
-# --- Configuration Parameters (customize these) ---
+# --- Adjusted Configuration Parameters ---
 VRF = "front-door"
 INTERFACE = "G0/1"
-DESCRIPTION = "Configured by Netmiko"
 IP_ADDR = "10.0.0.2"
 NETMASK = "255.255.255.0"
 
 OSPF_PROCESS = "1"
-OSPF_AREA = "20"
-OSPF_AREA_MODE = "STUB"
+OSPF_AREA = "15"          # Matches Hub Area 15
+OSPF_AREA_MODE = "stub"
 
-TUNNEL_INTERFACE = "Tunnel0"
-TUNNEL_DESCRIPTION = "GRE over IPsec to peer"
-TUNNEL_IP = "172.16.0.2"
+TUNNEL_INTERFACE = "Tunnel15"
+TUNNEL_IP = "172.16.15.2" # Matches Hub Tunnel15 Subnet (.15.1 is Hub)
 TUNNEL_MASK = "255.255.255.0"
-TUNNEL_SRC = INTERFACE
 
-PEER_IP = "10.0.0.1"
-PEER_NAME = "peer1"
+PEER_IP = "10.0.0.1"      # Hub physical IP
 PSK = "Cisco123!"
-
-IKEV2_PROPOSAL = "IKEV2_PROP"
-IKEV2_POLICY = "IKEV2_POL"
-IKEV2_KEYRING = "IKEV2_KR"
-IKEV2_PROFILE = "IKEV2_PROF"
-
-IPSEC_TS = "IPSEC_TS"
-IPSEC_PROFILE = "IPSEC_PROFILE"
 
 for device in node:
     print(f"\n{'='*25} Connecting to {device['host']} {'='*25}")
     try:
         with ConnectHandler(**device) as net_connect:
-            # Build a full configuration set: VRF, interface, IKEv2, IPsec, tunnel, OSPF
             config_commands = [
-                # Create VRF using modern syntax and enable IPv4 address family
+                # 1. VRF Setup
                 f"vrf definition {VRF}",
                 " address-family ipv4",
                 " exit-address-family",
 
-                # Physical interface in VRF
+                # 2. Physical interface in VRF
                 f"interface {INTERFACE}",
-                f"vrf forwarding {VRF}",
-                f"description {DESCRIPTION}",
-                f"ip address {IP_ADDR} {NETMASK}",
-                "no shutdown",
+                f" vrf forwarding {VRF}",
+                f" ip address {IP_ADDR} {NETMASK}",
+                " no shutdown",
 
-                # IKEv2 proposal and policy
-                f"crypto ikev2 proposal {IKEV2_PROPOSAL}",
-                "encryption aes-cbc-256",
-                "integrity sha256",
-                "group 14",
-                f"crypto ikev2 policy {IKEV2_POLICY}",
-                f"match fvrf {VRF}",
-                f"proposal {IKEV2_PROPOSAL}",
+                # 3. IKEv2 Proposal and Policy
+                "crypto ikev2 proposal IKEV2_PROP",
+                " encryption aes-cbc-256",
+                " integrity sha256",
+                " group 14",
+                "crypto ikev2 policy IKEV2_POL",
+                f" match fvrf {VRF}",
+                " proposal IKEV2_PROP",
 
-                # IKEv2 keyring and profile (PSK)
-                f"crypto ikev2 keyring {IKEV2_KEYRING}",
-                f"peer {PEER_NAME}",
-                f"address {PEER_IP}",
-                f"pre-shared-key local {PSK}",
-                f"pre-shared-key remote {PSK}",
+                # 4. IKEv2 Keyring (Symmetrical PSK)
+                "crypto ikev2 keyring IKEV2_KR",
+                " peer hub",
+                f"  address {PEER_IP}",
+                f"  pre-shared-key local {PSK}",
+                f"  pre-shared-key remote {PSK}",
 
-                f"crypto ikev2 profile {IKEV2_PROFILE}",
-                f"match fvrf {VRF}",
-                f"match identity remote address {PEER_IP} 0.0.0.0",
-                f"identity local address {IP_ADDR}",
-                "authentication remote pre-share",
-                "authentication local pre-share",
-                f"keyring local {IKEV2_KEYRING}",
+                # 5. IKEv2 Profile (Fixed Mask)
+                "crypto ikev2 profile IKEV2_PROF",
+                f" match fvrf {VRF}",
+                f" match identity remote address {PEER_IP} 255.255.255.255",
+                f" identity local address {IP_ADDR}",
+                " authentication remote pre-share",
+                " authentication local pre-share",
+                " keyring local IKEV2_KR",
 
-                # IPsec transform-set and profile
-                f"crypto ipsec transform-set {IPSEC_TS} esp-aes 256 esp-sha256-hmac",
-                "mode tunnel",
-                f"crypto ipsec profile {IPSEC_PROFILE}",
-                f"set transform-set {IPSEC_TS}",
-                f"set ikev2-profile {IKEV2_PROFILE}",
+                # 6. IPsec
+                "crypto ipsec transform-set IPSEC_TS esp-aes 256 esp-sha256-hmac",
+                " mode tunnel",
+                "crypto ipsec profile IPSEC_PROFILE",
+                " set transform-set IPSEC_TS",
+                " set ikev2-profile IKEV2_PROF",
 
-                # Tunnel interface (GRE) attached to the VRF for lookup
+                # 7. Tunnel interface (Adjusted)
                 f"interface {TUNNEL_INTERFACE}",
-                f"tunnel vrf {VRF}",
-                f"description {TUNNEL_DESCRIPTION}",
-                f"ip address {TUNNEL_IP} {TUNNEL_MASK}",
-                f"tunnel source {TUNNEL_SRC}",
-                f"tunnel destination {PEER_IP}",
-                "tunnel mode gre ip",
-                f"tunnel protection ipsec profile {IPSEC_PROFILE}",
-                # OSPF on tunnel will use the global OSPF process (configured below)
-                f"ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
-                "no shutdown",
+                f" tunnel vrf {VRF}",
+                f" ip address {TUNNEL_IP} {TUNNEL_MASK}",
+                f" tunnel source {INTERFACE}",
+                f" tunnel destination {PEER_IP}",
+                " tunnel mode gre ip",
+                " tunnel protection ipsec profile IPSEC_PROFILE",
+                f" ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
+                " no shutdown",
 
-                # Ensure global OSPF process exists (not VRF-scoped)
+                # 8. OSPF Process (Adjusted)
                 f"router ospf {OSPF_PROCESS}",
-                f"area {OSPF_AREA} {OSPF_AREA_MODE}",
-
-                # Persist configuration
+                f" area {OSPF_AREA} {OSPF_AREA_MODE}",
+                
                 "end",
                 "write memory",
             ]
 
-            print("Applying configuration:")
-            for cmd in config_commands:
-                print(f"  {cmd}")
-
+            print(f"Applying Spoke 1 config (Tunnel {TUNNEL_INTERFACE})...")
             output = net_connect.send_config_set(config_commands)
             print(output)
 
