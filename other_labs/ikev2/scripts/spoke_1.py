@@ -103,7 +103,7 @@ for device in node:
 
                 # Ensure global OSPF process exists (not VRF-scoped)
                 f"router ospf {OSPF_PROCESS}",
-                "area {OSPF_AREA} {OSPF_AREA_MODE}
+                "area {OSPF_AREA} {OSPF_AREA_MODE}",
 
                 # Persist configuration
                 "end",
