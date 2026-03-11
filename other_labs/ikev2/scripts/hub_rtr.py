@@ -68,13 +68,22 @@ for device in node:
                 f" match fvrf {VRF}",
                 " proposal IKEV2_PROP",
 
-                # 4. IKEv2 Keyring
+                # 4. IKEv2 Keyring with Symmetrical Keys
                 "crypto ikev2 keyring IKEV2_KR",
-                f" peer peer1", f"  address {T1_PEER}", f"  pre-shared-key {PSK}",
-                f" peer peer2", f"  address {T2_PEER}", f"  pre-shared-key {PSK}",
-                f" peer peer3", f"  address {T3_PEER}", f"  pre-shared-key {PSK}",
+                f" peer peer1", 
+                f"  address {T1_PEER}", 
+                f"  pre-shared-key local {PSK}",
+                f"  pre-shared-key remote {PSK}",
+                f" peer peer2", 
+                f"  address {T2_PEER}", 
+                f"  pre-shared-key local {PSK}",
+                f"  pre-shared-key remote {PSK}",
+                f" peer peer3", 
+                f"  address {T3_PEER}", 
+                f"  pre-shared-key local {PSK}",
+                f"  pre-shared-key remote {PSK}",
 
-                # 5. IKEv2 Profile (Matches Identity and VRF)
+                # 5. IKEv2 Profile
                 "crypto ikev2 profile IKEV2_PROF",
                 f" match fvrf {VRF}",
                 f" match identity remote address {T1_PEER} 255.255.255.255",
@@ -85,14 +94,14 @@ for device in node:
                 " authentication local pre-share",
                 " keyring local IKEV2_KR",
 
-                # 6. IPsec Transform & Profile
+                # 6. IPsec
                 "crypto ipsec transform-set IPSEC_TS esp-aes 256 esp-sha256-hmac",
                 " mode tunnel",
                 "crypto ipsec profile IPSEC_PROFILE",
                 " set transform-set IPSEC_TS",
                 " set ikev2-profile IKEV2_PROF",
 
-                # 7. Tunnels with Unique Areas
+                # 7. Tunnels
                 f"interface {T1_NAME}",
                 f" tunnel vrf {VRF}",
                 f" ip address {T1_IP} {TUNNEL_MASK}",
@@ -120,16 +129,15 @@ for device in node:
                 " tunnel protection ipsec profile IPSEC_PROFILE",
                 f" ip ospf {OSPF_PROCESS} area {T3_AREA}",
                 
-                # 8. Global OSPF Logic
-                f"router ospf {OSPF_PROCESS}",
+                "router ospf 1",
                 " default-information originate",
                 "end",
                 "write memory"
             ]
 
-            print(f"Applying full config to {device['host']}...")
+            print(f"Pushing configuration to {device['host']}...")
             output = net_connect.send_config_set(config_commands)
             print(output)
 
     except Exception as e:
-        print(f"Error on {device['host']}: {e}")
+        print(f"Error: {e}")
