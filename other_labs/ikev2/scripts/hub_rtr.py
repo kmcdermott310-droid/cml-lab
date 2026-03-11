@@ -7,140 +7,129 @@ node = [
         "username": "cisco",
         "password": "cisco",
     },
-
 ]
 
-# --- Configuration Parameters (customize these) ---
+# --- Core/Infrastructure Parameters ---
 VRF = "front-door"
 INTERFACE = "G0/1"
-DESCRIPTION = "Configured by Netmiko"
 IP_ADDR = "10.0.0.1"
 NETMASK = "255.255.255.0"
-
 OSPF_PROCESS = "1"
-OSPF_AREA = "0"
-
-# Downlink interfaces to core routers (non-VRF)
-DOWNLINK_CORE1_IF = "G0/2"
-DOWNLINK_CORE1_DESC = "Downlink-Core-1"
-DOWNLINK_CORE1_IP = "100.100.100.6"
-
-DOWNLINK_CORE2_IF = "G0/3"
-DOWNLINK_CORE2_DESC = "Downlink-Core-2"
-DOWNLINK_CORE2_IP = "100.100.100.10"
-DOWNLINK_MASK = "255.255.255.252"
-
-# Tunnel-specific OSPF area
-TUNNEL_OSPF_AREA = "20"
-
-TUNNEL_INTERFACE = "Tunnel0"
-TUNNEL_DESCRIPTION = "GRE over IPsec to peer"
-TUNNEL_IP = "172.16.0.1"
-TUNNEL_MASK = "255.255.255.0"
-TUNNEL_SRC = INTERFACE
-
-PEER_IP = "10.0.0.2"
-PEER_NAME = "peer1"
 PSK = "Cisco123!"
 
-IKEV2_PROPOSAL = "IKEV2_PROP"
-IKEV2_POLICY = "IKEV2_POL"
-IKEV2_KEYRING = "IKEV2_KR"
-IKEV2_PROFILE = "IKEV2_PROF"
+# Downlink interfaces (Non-VRF)
+CORE_IF_1, CORE_IP_1 = "G0/2", "100.100.100.6"
+CORE_IF_2, CORE_IP_2 = "G0/3", "100.100.100.10"
+CORE_MASK = "255.255.255.252"
 
-IPSEC_TS = "IPSEC_TS"
-IPSEC_PROFILE = "IPSEC_PROFILE"
+# --- Tunnel & Area Mapping ---
+# Tunnel 1 -> Area 20
+T1_NAME, T1_IP, T1_PEER, T1_AREA = "Tunnel10", "172.16.10.1", "10.0.0.2", "20"
+# Tunnel 2 -> Area 30
+T2_NAME, T2_IP, T2_PEER, T2_AREA = "Tunnel20", "172.16.20.1", "10.0.0.3", "30"
+# Tunnel 3 -> Area 40
+T3_NAME, T3_IP, T3_PEER, T3_AREA = "Tunnel30", "172.16.30.1", "10.0.0.4", "40"
+
+TUNNEL_MASK = "255.255.255.0"
 
 for device in node:
     print(f"\n{'='*25} Connecting to {device['host']} {'='*25}")
     try:
         with ConnectHandler(**device) as net_connect:
-            # Build a full configuration set: VRF, interface, IKEv2, IPsec, tunnel, OSPF
             config_commands = [
-                # First, add non-VRF physical links to cores
-                f"interface {DOWNLINK_CORE1_IF}",
-                f"description {DOWNLINK_CORE1_DESC}",
-                f"ip address {DOWNLINK_CORE1_IP} {DOWNLINK_MASK}",
-                f"ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
-                "no shutdown",
+                # 1. Non-VRF Physical Core Links
+                f"interface {CORE_IF_1}",
+                f" description Downlink-Core-1",
+                f" ip address {CORE_IP_1} {CORE_MASK}",
+                f" ip ospf {OSPF_PROCESS} area 0",
+                " no shutdown",
 
-                f"interface {DOWNLINK_CORE2_IF}",
-                f"description {DOWNLINK_CORE2_DESC}",
-                f"ip address {DOWNLINK_CORE2_IP} {DOWNLINK_MASK}",
-                f"ip ospf {OSPF_PROCESS} area {OSPF_AREA}",
-                "no shutdown",
+                f"interface {CORE_IF_2}",
+                f" description Downlink-Core-2",
+                f" ip address {CORE_IP_2} {CORE_MASK}",
+                f" ip ospf {OSPF_PROCESS} area 0",
+                " no shutdown",
 
-                # Create VRF using modern syntax and enable IPv4 address family
+                # 2. VRF Setup
                 f"vrf definition {VRF}",
                 " address-family ipv4",
                 " exit-address-family",
-
-                # Physical interface in VRF
                 f"interface {INTERFACE}",
-                f"vrf forwarding {VRF}",
-                f"description {DESCRIPTION}",
-                f"ip address {IP_ADDR} {NETMASK}",
-                "no shutdown",
+                f" vrf forwarding {VRF}",
+                f" ip address {IP_ADDR} {NETMASK}",
+                " no shutdown",
 
-                # IKEv2 proposal and policy
-                f"crypto ikev2 proposal {IKEV2_PROPOSAL}",
-                "encryption aes-cbc-256",
-                "integrity sha256",
-                "group 14",
-                f"crypto ikev2 policy {IKEV2_POLICY}",
-                f"match fvrf {VRF}",
-                f"proposal {IKEV2_PROPOSAL}",
+                # 3. IKEv2 Proposal & Policy
+                "crypto ikev2 proposal IKEV2_PROP",
+                " encryption aes-cbc-256",
+                " integrity sha256",
+                " group 14",
+                "crypto ikev2 policy IKEV2_POL",
+                f" match fvrf {VRF}",
+                " proposal IKEV2_PROP",
 
-                # IKEv2 keyring and profile (PSK)
-                f"crypto ikev2 keyring {IKEV2_KEYRING}",
-                f"peer {PEER_NAME}",
-                f"address {PEER_IP}",
-                f"pre-shared-key local {PSK}",
-                f"pre-shared-key remote {PSK}",
+                # 4. IKEv2 Keyring
+                "crypto ikev2 keyring IKEV2_KR",
+                f" peer peer1", f"  address {T1_PEER}", f"  pre-shared-key {PSK}",
+                f" peer peer2", f"  address {T2_PEER}", f"  pre-shared-key {PSK}",
+                f" peer peer3", f"  address {T3_PEER}", f"  pre-shared-key {PSK}",
 
-                f"crypto ikev2 profile {IKEV2_PROFILE}",
-                f"match fvrf {VRF}",
-                f"match identity remote address {PEER_IP} 0.0.0.0",
-                f"identity local address {IP_ADDR}",
-                "authentication remote pre-share",
-                "authentication local pre-share",
-                f"keyring local {IKEV2_KEYRING}",
+                # 5. IKEv2 Profile (Matches Identity and VRF)
+                "crypto ikev2 profile IKEV2_PROF",
+                f" match fvrf {VRF}",
+                f" match identity remote address {T1_PEER} 255.255.255.255",
+                f" match identity remote address {T2_PEER} 255.255.255.255",
+                f" match identity remote address {T3_PEER} 255.255.255.255",
+                f" identity local address {IP_ADDR}",
+                " authentication remote pre-share",
+                " authentication local pre-share",
+                " keyring local IKEV2_KR",
 
-                # IPsec transform-set and profile
-                f"crypto ipsec transform-set {IPSEC_TS} esp-aes 256 esp-sha256-hmac",
-                "mode tunnel",
-                f"crypto ipsec profile {IPSEC_PROFILE}",
-                f"set transform-set {IPSEC_TS}",
-                f"set ikev2-profile {IKEV2_PROFILE}",
+                # 6. IPsec Transform & Profile
+                "crypto ipsec transform-set IPSEC_TS esp-aes 256 esp-sha256-hmac",
+                " mode tunnel",
+                "crypto ipsec profile IPSEC_PROFILE",
+                " set transform-set IPSEC_TS",
+                " set ikev2-profile IKEV2_PROF",
 
-                # Tunnel interface (GRE) attached to the VRF for lookup
-                f"interface {TUNNEL_INTERFACE}",
-                f"tunnel vrf {VRF}",
-                f"description {TUNNEL_DESCRIPTION}",
-                f"ip address {TUNNEL_IP} {TUNNEL_MASK}",
-                f"tunnel source {TUNNEL_SRC}",
-                f"tunnel destination {PEER_IP}",
-                "tunnel mode gre ip",
-                f"tunnel protection ipsec profile {IPSEC_PROFILE}",
-                # OSPF on tunnel will use the global OSPF process; tunnel area changed
-                f"ip ospf {OSPF_PROCESS} area {TUNNEL_OSPF_AREA}",
-                "no shutdown",
+                # 7. Tunnels with Unique Areas
+                f"interface {T1_NAME}",
+                f" tunnel vrf {VRF}",
+                f" ip address {T1_IP} {TUNNEL_MASK}",
+                f" tunnel source {INTERFACE}",
+                f" tunnel destination {T1_PEER}",
+                " tunnel mode gre ip",
+                " tunnel protection ipsec profile IPSEC_PROFILE",
+                f" ip ospf {OSPF_PROCESS} area {T1_AREA}",
 
-                # Ensure global OSPF process exists (not VRF-scoped)
-                f"router ospf {OSPF_PROCESS}",
-                "default-information originate",
+                f"interface {T2_NAME}",
+                f" tunnel vrf {VRF}",
+                f" ip address {T2_IP} {TUNNEL_MASK}",
+                f" tunnel source {INTERFACE}",
+                f" tunnel destination {T2_PEER}",
+                " tunnel mode gre ip",
+                " tunnel protection ipsec profile IPSEC_PROFILE",
+                f" ip ospf {OSPF_PROCESS} area {T2_AREA}",
+
+                f"interface {T3_NAME}",
+                f" tunnel vrf {VRF}",
+                f" ip address {T3_IP} {TUNNEL_MASK}",
+                f" tunnel source {INTERFACE}",
+                f" tunnel destination {T3_PEER}",
+                " tunnel mode gre ip",
+                " tunnel protection ipsec profile IPSEC_PROFILE",
+                f" ip ospf {OSPF_PROCESS} area {T3_AREA}",
                 
-                # Persist configuration
+                # 8. Global OSPF Logic
+                f"router ospf {OSPF_PROCESS}",
+                " default-information originate",
                 "end",
-                "write memory",
+                "write memory"
             ]
 
-            print("Applying configuration:")
-            for cmd in config_commands:
-                print(f"  {cmd}")
-
+            print(f"Applying full config to {device['host']}...")
             output = net_connect.send_config_set(config_commands)
             print(output)
 
     except Exception as e:
-        print(f"Failed to connect: {e}")
+        print(f"Error on {device['host']}: {e}")
