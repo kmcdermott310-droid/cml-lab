@@ -128,7 +128,8 @@ for device in node:
 
                 # Ensure global OSPF process exists (not VRF-scoped)
                 f"router ospf {OSPF_PROCESS}",
-
+                "default-information originate",
+                
                 # Persist configuration
                 "end",
                 "write memory",
